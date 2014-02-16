@@ -1,9 +1,45 @@
-import scala.xml.Node
+import dictionary.Dictionary
+import scala.xml._
+import scala.xml.transform._
 
 /**
- * Created by kazuki on 2014/02/16.
+ * EDMファイルで定義されたエンティティの物理名の翻訳変換を行います。
+ * @param dictionary  翻訳に使用する [[Dictionary]]
  */
-trait EdmTranslator {
+class EdmTranslator(dictionary: Dictionary) {
 
-  def translate(xml :Node): Node = {xml}
+  /**
+   * エンティティの物理名を変換する[[RewriteRule]]です。
+   */
+    object EntityPhysicalNameRewriteRule extends RewriteRule {
+
+      /**
+       * '''P-NAME'''属性を翻訳します。
+       */
+      def translateAttribute(n: Node): MetaData = {
+        n.attribute("P-NAME") match {
+          case Some(attr)
+            => Attribute("P-NAME", Text(dictionary.find(attr.text).getOrElse(attr.text)), Null)
+          case None
+            => Null
+        }
+      }
+
+      override def transform(xml: Node): Seq[Node] = xml match {
+        case elem @ Elem(prefix, "ENTITY", attributes, scope, _*)
+          => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case elem @ Elem(prefix, "ATTR", attributes, scope, _*)
+          => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case other => other
+      }
+    }
+
+  /**
+   * EDMファイルの[[Node]]を翻訳変換します。
+   * @param xml EDMファイルの[[Node]]
+   * @return エンティティの物理名が翻訳された[[Node]]
+   */
+  def translate(xml :Node): Node = {
+    new RuleTransformer(EntityPhysicalNameRewriteRule).transform(xml).head
+  }
 }
