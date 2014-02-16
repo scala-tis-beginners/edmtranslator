@@ -26,9 +26,9 @@ class EdmTranslator(dictionary: Dictionary) {
       }
 
       override def transform(xml: Node): Seq[Node] = xml match {
-        case elem @ Elem(prefix, "ENTITY", attributes, scope, _*)
+        case elem @ Elem(_, "ENTITY", attributes, _, _*)
           => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
-        case elem @ Elem(prefix, "ATTR", attributes, scope, _*)
+        case elem @ Elem(_, "ATTR", attributes, _, _*)
           => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
         case other => other
       }
