@@ -15,6 +15,7 @@ class EdmTranslator(dictionary: Dictionary) {
 
       /**
        * '''P-NAME'''属性を翻訳します。
+       * 翻訳できない場合は素の文言のままにします。
        */
       def translateAttribute(n: Node): MetaData = {
         n.attribute("P-NAME") match {
