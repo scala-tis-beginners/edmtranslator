@@ -1,4 +1,4 @@
-import dictionary.Dictionary
+import com.example.edmtranslator.dictionary.Dictionary
 import scala.xml._
 import scala.xml.transform._
 

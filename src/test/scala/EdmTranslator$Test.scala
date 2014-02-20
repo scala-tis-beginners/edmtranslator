@@ -1,4 +1,4 @@
-import dictionary.Dictionary
+import com.example.edmtranslator.dictionary.Dictionary
 import org.scalatest._
 import scala.xml.XML
 import scala.xml.Utility.trim;

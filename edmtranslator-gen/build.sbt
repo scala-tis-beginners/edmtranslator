@@ -1,6 +1,8 @@
-name := "edmtanslator"
+name := "edmtanslator-gen"
 
-version := "1.0"
+version := "0.1"
+
+scalaVersion := "2.10.3"
 
 libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.3.175"

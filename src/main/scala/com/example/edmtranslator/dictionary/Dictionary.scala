@@ -1,4 +1,4 @@
-package dictionary
+package com.example.edmtranslator.dictionary
 
 /**
  * 辞書
