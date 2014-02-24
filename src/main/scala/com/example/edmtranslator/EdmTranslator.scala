@@ -1,12 +1,20 @@
+package com.example.edmtranslator
+
 import com.example.edmtranslator.dictionary.Dictionary
 import scala.xml._
 import scala.xml.transform._
 
 /**
  * EDMファイルで定義されたエンティティの物理名の翻訳変換を行います。
- * @param dictionary  翻訳に使用する [[Dictionary]]
  */
-class EdmTranslator(dictionary: Dictionary) {
+class EdmTranslator(env: {
+
+   /**
+   *  翻訳に使用する [[Dictionary]]
+   */
+  val dictionary: Dictionary
+
+}) {
 
   /**
    * エンティティの物理名を変換する[[RewriteRule]]です。
@@ -20,7 +28,7 @@ class EdmTranslator(dictionary: Dictionary) {
       def translateAttribute(n: Node): MetaData = {
         n.attribute("P-NAME") match {
           case Some(attr)
-            => Attribute("P-NAME", Text(dictionary.find(attr.text).getOrElse(attr.text)), Null)
+            => Attribute("P-NAME", Text(env.dictionary.find(attr.text).getOrElse(attr.text)), Null)
           case None
             => Null
         }
