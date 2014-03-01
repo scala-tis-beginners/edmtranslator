@@ -7,16 +7,16 @@ edmファイル内の物理名を日本語から英語に翻訳するツール�
 ----------
 sbt で assembly すると target ディレクトリに edmtr.jar がビルドされます。
 
-  sbt assembly
+    sbt assembly
   
 実行方法
 --------
 DBへの接続文字列と出力ファイル名、入力ファイル名を指定して実行します。
 
-  java -jar edmtr.jar -d jdbc:h2:sample -o output.edm input.edm
+    java -jar edmtr.jar -d jdbc:h2:sample -o output.edm input.edm
   
 標準入力、標準出力も使えます。
 
-  cat input.edm | java -jar edmtr.jar -d jdbc:h2:sample > output.edm
+    cat input.edm | java -jar edmtr.jar -d jdbc:h2:sample > output.edm
   
 /src/main/resources/sample にサンプルのデータベースと入力ファイルがあります。
