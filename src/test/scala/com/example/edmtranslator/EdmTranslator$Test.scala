@@ -4,8 +4,10 @@ import com.example.edmtranslator.Tables._
 import org.scalatest._
 import scala.xml.Utility.trim
 
-import scala.slick.driver.JdbcDriver.simple._
+import scala.slick.driver.H2Driver.simple._
 import Database.dynamicSession
+import com.example.edmtranslator.Tables.DictionaryRow
+import scala.Some
 
 /**
  * Created by kazuki on 2014/02/16.
@@ -14,11 +16,11 @@ class EdmTranslator$Test extends FunSuite with BeforeAndAfter with Matchers with
 
 
   before {
-    database withDynSession Tables.Dictionary.ddl.create
+    database withDynSession Dictionary.ddl.create
   }
 
   after {
-    database withDynSession Tables.Dictionary.ddl.drop
+    database withDynSession Dictionary.ddl.drop
   }
 
 
@@ -26,25 +28,34 @@ class EdmTranslator$Test extends FunSuite with BeforeAndAfter with Matchers with
 
     database withDynSession {
       Dictionary ++= Seq(
-        DictionaryRow("テスト用エンティティ", Some("entity-for-test")),
-        DictionaryRow("テスト用属性", Some("attr-for-test"))
+        DictionaryRow("プロジェクト", Some("project")),
+        DictionaryRow("ＩＤ", Some("id")),
+        DictionaryRow("メンバー", Some("member"))
       )
     }
 
     val xml =
       <ERD>
-        <ENTITY P-NAME="テスト用エンティティ" >
-          <ATTR P-NAME="テスト用属性" />
+        <ENTITY P-NAME="プロジェクト" >
+          <ATTR P-NAME="プロジェクトＩＤ" />
+          <INDEX P-NAME="プロジェクトＩＤ" >
+          </INDEX>
         </ENTITY>
+        <RELATION P-NAME="FK_プロジェクト_メンバー" >
+        </RELATION>
       </ERD>
 
     val output = translator.translate(xml)
 
     val expect =
       <ERD>
-        <ENTITY P-NAME="entity-for-test" >
-          <ATTR P-NAME="attr-for-test" />
+        <ENTITY P-NAME="project" >
+          <ATTR P-NAME="project_id" />
+          <INDEX P-NAME="project_id" >
+          </INDEX>
         </ENTITY>
+        <RELATION P-NAME="FK_project_member" >
+        </RELATION>
       </ERD>
 
     assert(trim(output) == trim(expect))

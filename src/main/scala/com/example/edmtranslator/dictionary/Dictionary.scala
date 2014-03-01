@@ -16,4 +16,6 @@ trait Dictionary {
    *         この辞書で定義されていない文言の場合は [[None]] を返します。
    */
   def find(word: String): Option[String]
+
+  def translate(text: String): Either[NotCompletelyTranslationException, List[String]]
 }

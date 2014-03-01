@@ -1,6 +1,6 @@
 package com.example.edmtranslator
 
-import com.example.edmtranslator.dictionary.Dictionary
+import com.example.edmtranslator.dictionary.{NotCompletelyTranslationException, Dictionary}
 import scala.xml._
 import scala.xml.transform._
 
@@ -21,24 +21,48 @@ class EdmTranslator(env: {
    */
     object EntityPhysicalNameRewriteRule extends RewriteRule {
 
+      val wordDelimiter = "_"
+
       /**
        * '''P-NAME'''属性を翻訳します。
        * 翻訳できない場合は素の文言のままにします。
        */
       def translateAttribute(n: Node): MetaData = {
         n.attribute("P-NAME") match {
-          case Some(attr)
-            => Attribute("P-NAME", Text(env.dictionary.find(attr.text).getOrElse(attr.text)), Null)
-          case None
-            => Null
+          case Some(attr) => {
+
+            val words = attr.text split wordDelimiter
+
+            val transedWords = for (word <- words) yield word match {
+              case word: String if word.matches("[a-zA-Z]+") => word
+              case word: String =>
+                env.dictionary.translate(word) match {
+
+                  case Right(words) => words.mkString(wordDelimiter)
+
+                  case Left(NotCompletelyTranslationException(words)) => {
+
+                    System.err.println(s"[Failure] $word => ${words mkString(wordDelimiter)}")
+
+                    words.mkString(wordDelimiter)
+                  }
+                }
+            }
+            Attribute("P-NAME", Text(transedWords.mkString(wordDelimiter)), Null)
+          }
+          case None => Null
         }
       }
 
       override def transform(xml: Node): Seq[Node] = xml match {
-        case elem @ Elem(_, "ENTITY", attributes, _, _*)
-          => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
-        case elem @ Elem(_, "ATTR", attributes, _, _*)
-          => elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case elem @ Elem(_, "ENTITY", attributes, _, _*) =>
+          elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case elem @ Elem(_, "INDEX", attributes, _, _*) =>
+          elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case elem @ Elem(_, "RELATION", attributes, _, _*) =>
+          elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
+        case elem @ Elem(_, "ATTR", attributes, _, _*) =>
+          elem.asInstanceOf[Elem] % attributes.append(translateAttribute(elem))
         case other => other
       }
     }

@@ -1,12 +1,12 @@
 package com.example.edmtranslator
 
 import com.example.edmtranslator.dictionary.DatabaseDictionary
-import scala.slick.driver.JdbcDriver.simple._
+import scala.slick.driver.H2Driver.simple._
 
 
 trait Config {
 
-  lazy val database = Database.forURL("jdbc:h2:mem")
+  val database: Database
 
   lazy val dictionary = new DatabaseDictionary(this)
 

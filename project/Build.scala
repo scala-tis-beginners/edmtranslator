@@ -38,6 +38,6 @@ object EdmtranslatorBuild extends Build {
         ,streams.log)
     )
 
-    Seq(file(outputDir + "/Tables.scala"))
+    Seq(file(outputDir + "/com/example/edmtranslator/Tables.scala"))
   }
 }
