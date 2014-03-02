@@ -49,7 +49,7 @@ object CUI {
       .action { (x, cfg) => cfg.copy(input = Some(x)) }
   }
 
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Unit = {
     optParser.parse(args, CommandOption()) map { option =>
 
       object appConfig extends edmtranslator.Config {
@@ -82,7 +82,7 @@ object CUI {
         appConfig.translator.translate(XML.withSAXParser(parser).load(i))
       }
 
-      translatedXml.map { xml =>
+      translatedXml.foreach { xml =>
         using(output) { o =>
           XML.write(output, xml, option.charset.name(), true, doctypeHandler.doctype.orNull)
         }
